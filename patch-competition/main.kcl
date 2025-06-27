@@ -29,23 +29,21 @@ fn storm() {
   return loft(parts, vDegree = 2)
 }
 
-// storm()
-//   |> appearance(color = "#141d5c")
 
-// storm()
-//   |> rotate(yaw = 180deg)
-//   |> appearance(color = "#2c7c87")
-
-n = 4
-min = 10
-max = 120
-interval = (max-min)/n
-[0..<n]
-  |> map(f = fn(@i) {
-    return storm()
-      |> appearance(color = appearance::hexString([min+(interval*i), min+(interval*i), 255]))
-      |> rotate(yaw = i * 14deg)
-  })
+// n = 4
+// min = 10
+// max = 120
+// interval = (max - min) / n
+// storms = [0..<n]
+//   |> map(f = fn(@i) {
+//     return storm()
+//       |> appearance(color = appearance::hexString([
+//            min + interval * i,
+//            min + interval * i,
+//            255
+//          ]))
+//       |> rotate(yaw = i * 14deg)
+//   })
 
 sketchLightning = startSketchOn(-XZ)
 profileLightning = startProfile(sketchLightning, at = [-3.5, 6.44])
@@ -59,9 +57,10 @@ profileLightning = startProfile(sketchLightning, at = [-3.5, 6.44])
 lightningBolt = revolve(profileLightning, angle = 10, axis = Y)
   |> appearance(color = "#ffff33")
 
-patternCircular3d(
-  lightningBolt,
-  instances = 5,
-  axis = Z,
-  center = [0, 0, 0],
-)
+// patternCircular3d(
+//   lightningBolt,
+//   instances = 5,
+//   axis = Z,
+//   center = [0, 0, 0],
+// )
+
