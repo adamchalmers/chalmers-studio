@@ -1,33 +1,51 @@
-// box = startSketchOn(XY)
-// |> startProfile(at = [-1.98, 1.97])
-// |> angledLine(angle = 0, length = 3.98, tag = $rectangleSegmentA001)
-// |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 2.93)
-// |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
-// |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-// |> close()
-// |> extrude(length = 6)
+fn storm() {
+  spiral1A = startSketchOn(offsetPlane(XY, offset = 6))
+    |> startProfile(at = [-0.6, -0.05])
+    |> line(end = [1.56, 0.25])
+    |> tangentialArc(end = [-0.31, -1.32])
+    |> tangentialArc(end = [-1.51, 0.4])
+    |> tangentialArc(endAbsolute = [profileStartX(%), profileStartY(%)])
+    |> close()
 
+  spiral1B = clone(spiral1A)
+    |> translate(z = -1)
+    |> rotate(yaw = 90deg)
+  spiral1C = clone(spiral1A)
+    |> translate(z = -2)
+    |> rotate(yaw = 180deg)
+  spiral1D = clone(spiral1A)
+    |> translate(z = -3)
+    |> rotate(yaw = 270deg)
+  spiral1Bottom = startSketchOn(XY)
+    |> circle(center = [0, 0], diameter = 0.2)
 
-holeProfile = startSketchOn(offsetPlane(XY, offset = 6))
-  |> startProfile(at = [-0.6, -0.05])
-  |> line(end = [1.56, 0.25])
-  |> tangentialArc(end = [-0.31, -1.32])
-  |> tangentialArc(end = [-1.51, 0.4])
-  |> tangentialArc(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close()
+  parts = [
+    spiral1Bottom,
+    spiral1D,
+    spiral1C,
+    spiral1B,
+    spiral1A
+  ]
+  return loft(parts, vDegree = 2)
+}
 
-holeProfile2 = startSketchOn(offsetPlane(XY, offset = 6))
-  |> startProfile(at = [-0.6, -0.05])
-  |> line(end = [1.56, 0.25])
-  |> tangentialArc(end = [-0.31, -1.32])
-  |> tangentialArc(end = [-1.51, 0.4])
-  |> tangentialArc(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close()
+// storm()
+//   |> appearance(color = "#141d5c")
 
-extrude001 = extrude(holeProfile, length = -4, twistAngle = 360deg)
-  |> appearance(color = "#141d5c")
-extrude002 = extrude(holeProfile2, length = -4, twistAngle = 180deg)
-  |> appearance(color = "#144331")
+// storm()
+//   |> rotate(yaw = 180deg)
+//   |> appearance(color = "#2c7c87")
+
+n = 4
+min = 10
+max = 120
+interval = (max-min)/n
+[0..<n]
+  |> map(f = fn(@i) {
+    return storm()
+      |> appearance(color = appearance::hexString([min+(interval*i), min+(interval*i), 255]))
+      |> rotate(yaw = i * 14deg)
+  })
 
 sketchLightning = startSketchOn(-XZ)
 profileLightning = startProfile(sketchLightning, at = [-3.5, 6.44])
@@ -41,4 +59,9 @@ profileLightning = startProfile(sketchLightning, at = [-3.5, 6.44])
 lightningBolt = revolve(profileLightning, angle = 10, axis = Y)
   |> appearance(color = "#ffff33")
 
-patternCircular3d(lightningBolt, instances = 5, axis = Z, center = [0, 0, 0])
+patternCircular3d(
+  lightningBolt,
+  instances = 5,
+  axis = Z,
+  center = [0, 0, 0],
+)
