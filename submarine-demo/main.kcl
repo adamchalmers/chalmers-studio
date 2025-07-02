@@ -1,14 +1,17 @@
-let scale = 10
-let center = [5, 10]
-let base = startSketchOn('XY')
-  |> startProfileAt(center, %)
-  |> line([0, scale], %, $face)
-  |> tangentialArcToRelative([scale, 0], %)
-  |> line([0, -scale], %)
-  |> tangentialArcToRelative([-scale, 0], %)
-  |> close(%)
-  |> extrude(scale / 2, %)
-
-startSketchOn(base, face)
-  |> circle({center: [-15, scale/4], radius: 2}, %)
-  |> extrude(scale/4, %)
+sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> yLine(length = 1.14)
+  |> line(endAbsolute = [1.33, 0])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg01)
+  |> close()
+  
+extrude001 = extrude(profile001, length = 2, tagEnd = $capEnd001)
+  |> chamfer(
+       length = 1,
+       tags = [
+         getCommonEdge(faces = [seg01, capEnd001])
+       ],
+       tag = $seg02,
+     )
+     
+p0 = planeOf(extrude001, face = seg02)

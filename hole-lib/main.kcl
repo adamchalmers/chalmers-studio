@@ -8,18 +8,18 @@ carveHole(
   holeProfile(
     bottom = drill(bitAngle = 118deg),
     body = blind(depth = 10, diameter = 4),
-    top = countersink(diameter = 5, angle = 82deg),
+    top = countersink(diameter = 5, angle = 90deg),
   )
 )
 |> appearance(color = "#2299ff")
 
 // Rightmost hole
-carveHole(
-  holeProfile(
-    bottom = flat(),
-    body = blind(depth = 10, diameter = 4),
-    top = counterbore(diameter = 5, depth = 2),
-  )
-)
-|> translate(y = -10)
-|> appearance(color = "#44aa22")
+// carveHole(
+//   holeProfile(
+//     bottom = flat(),
+//     body = blind(depth = 10, diameter = 4),
+//     top = counterbore(diameter = 5, depth = 2),
+//   )
+// )
+// |> translate(y = -10)
+// |> appearance(color = "#44aa22")
