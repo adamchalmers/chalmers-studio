@@ -1,18 +1,18 @@
 // Tops
 
 
-TOP_NONE = 0
-TOP_COUNTERBORE = 1
+topNone = 0
+topCounterbore = 1
 
 export fn noTopFeature() {
-  return { feature = TOP_NONE }
+  return { feature = topNone }
 }
 
 export fn counterbore(diameter, depth) {
   return {
     diameter = diameter,
     depth = depth,
-    feature = TOP_COUNTERBORE
+    feature = topCounterbore
   }
 }
 
@@ -40,16 +40,15 @@ export fn flat() {
 // Defining the hole
 
 
-fn drawTop(@partial, body, top) {
-  return if top.feature == TOP_NONE {
-    partial
+fn drawTop(@partialHoleProfile, body, top) {
+  return if top.feature == topNone {
+    partialHoleProfile
       |> yLine(length = body.diameter)
-  } else if top.feature == TOP_COUNTERBORE {
+  } else if top.feature == topCounterbore {
     lip = (top.diameter - body.diameter) / 2
-    partial
-      // |> yLine(length = -lip)
+    partialHoleProfile
       |> xLine(length = top.depth)
-      |> yLine(length = top.diameter/2)
+      |> yLine(length = top.diameter / 2)
       |> xLine(length = -top.depth)
       |> yLine(length = -lip)
   } else {
@@ -72,7 +71,7 @@ export fn holeProfile(bottom, body, top) {
     |> drawTop(body, top)
     |> xLine(length = -body.blindDepth)
     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close()
+    |> close()
 }
 
 // Actually defining a hole
@@ -80,8 +79,7 @@ export fn holeProfile(bottom, body, top) {
 
 export fn carveHole(@holeProfile) {
   return holeProfile
-  |> revolve(axis = X)
-  |> rotate(axis = Z, angle = 90deg)
+    |> revolve(axis = X)
+    |> rotate(axis = Z, angle = 90deg)
+    |> appearance(color = "#ff9933")
 }
-
-
