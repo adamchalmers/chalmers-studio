@@ -1,0 +1,54 @@
+// Tops
+
+export fn noTopFeature() {
+  return { feature = "none" }
+}
+
+// Bodies
+
+
+export fn blind(depth, diameter) {
+  return {
+    blindDepth = depth,
+    diameter = diameter
+  }
+}
+
+// Ends
+
+
+export fn drill(bitAngle) {
+  return { drillBitAngle = bitAngle }
+}
+
+export fn flat() {
+  return { drillBitAngle = 180deg }
+}
+
+// Defining the hole
+
+
+export fn holeProfile(bottom, body, top) {
+  radius = body.diameter / 2
+  theta = bottom.drillBitAngle / 2
+
+  adj = radius / tan(theta)
+  hyp = radius / sin(theta)
+  return startSketchOn(XY)
+    |> startProfile(at = [0, 0])
+    |> xLine(length = adj)
+    |> xLine(length = body.blindDepth)
+    |> yLine(length = body.diameter)
+    |> xLine(length = -body.blindDepth)
+    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+    |> close()
+}
+
+// Actually defining a hole
+
+
+export fn carveHole(@holeProfile) {
+  return holeProfile
+    |> revolve(axis = X)
+    |> rotate(axis = Z, angle = 90deg)
+}

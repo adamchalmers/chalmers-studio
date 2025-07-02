@@ -1,66 +1,27 @@
-fn storm() {
-  spiral1A = startSketchOn(offsetPlane(XY, offset = 6))
-    |> startProfile(at = [-0.6, -0.05])
-    |> line(end = [1.56, 0.25])
-    |> tangentialArc(end = [-0.31, -1.32])
-    |> tangentialArc(end = [-1.51, 0.4])
-    |> tangentialArc(endAbsolute = [profileStartX(%), profileStartY(%)])
-    |> close()
+x = 333.2
+y = true
+z = "adam"
 
-  spiral1B = clone(spiral1A)
-    |> translate(z = -1)
-    |> rotate(yaw = 90deg)
-  spiral1C = clone(spiral1A)
-    |> translate(z = -2)
-    |> rotate(yaw = 180deg)
-  spiral1D = clone(spiral1A)
-    |> translate(z = -3)
-    |> rotate(yaw = 270deg)
-  spiral1Bottom = startSketchOn(XY)
-    |> circle(center = [0, 0], diameter = 0.2)
-
-  parts = [
-    spiral1Bottom,
-    spiral1D,
-    spiral1C,
-    spiral1B,
-    spiral1A
-  ]
-  return loft(parts, vDegree = 2)
+fn f(x: number, y: number) {
+  return 33
 }
 
+// foo
+st = [3, 3]
+mySketch = startSketchOn(XY)
+|> startProfile(at = st)
 
-// n = 4
-// min = 10
-// max = 120
-// interval = (max - min) / n
-// storms = [0..<n]
-//   |> map(f = fn(@i) {
-//     return storm()
-//       |> appearance(color = appearance::hexString([
-//            min + interval * i,
-//            min + interval * i,
-//            255
-//          ]))
-//       |> rotate(yaw = i * 14deg)
-//   })
 
-sketchLightning = startSketchOn(-XZ)
-profileLightning = startProfile(sketchLightning, at = [-3.5, 6.44])
-  |> line(end = [0.74, -1.51])
-  |> line(end = [-0.99, 0.28])
-  |> line(end = [1.26, -1.91])
-  |> line(end = [-0.43, 1.37])
-  |> line(end = [0.86, -0.16])
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close()
-lightningBolt = revolve(profileLightning, angle = 10, axis = Y)
-  |> appearance(color = "#ffff33")
 
-// patternCircular3d(
-//   lightningBolt,
-//   instances = 5,
-//   axis = Z,
-//   center = [0, 0, 0],
-// )
+
+
+
+
+
+
+
+
+
+
+
 
