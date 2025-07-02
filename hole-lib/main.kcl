@@ -1,11 +1,11 @@
 @settings(defaultLengthUnit = cm)
 
-import carveHole, holeProfile, drill, blind, noTopFeature from "hole_lib.kcl"
+import carveHole, counterbore, holeProfile, drill, blind from "hole_lib.kcl"
 
-carveHole(
-  holeProfile(
-    bottom = drill(bitAngle = 118deg),
-    body = blind(depth = 10, diameter = 4),
-    top = noTopFeature(),
-  )
+chalmersCorpStdHole = holeProfile(
+  bottom = drill(bitAngle = 118deg),
+  body = blind(depth = 10, diameter = 4),
+  top = counterbore(diameter = 5, depth = 2),
 )
+
+carveHole(chalmersCorpStdHole)
