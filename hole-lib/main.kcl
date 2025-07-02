@@ -1,6 +1,6 @@
 @settings(defaultLengthUnit = cm)
 
-import counterbore, flat, countersink, holeProfile, drill, blind, carveHoleInto from "hole_lib.kcl"
+import counterbore, flat, countersink, holeProfile, drill, blind, hole from "hole_lib.kcl"
 
 
 // Leftmost hole
@@ -34,4 +34,4 @@ bigCube = startSketchOn(XY)
   |> line(end = [0, -cubeLen])
   |> close()
   |> extrude(length = cubeLen, symmetric = true)
-  |> carveHoleInto(face = START, hole = holeProf)
+  |> hole(face = START, hole = holeProf)

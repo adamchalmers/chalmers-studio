@@ -162,7 +162,7 @@ fn angleAxis(angle, axis) {
 // Actually defining a hole
 
 
-export fn carveHoleInto(@solid, face, hole) {
+export fn hole(@solid, face, hole) {
   targetPlane = planeOf(solid, face)
   targetPlaneNormal = cross(v1 = targetPlane.xAxis, v2 = targetPlane.yAxis)
   // v2 is the X axis by convention, but cannot coerce properly
