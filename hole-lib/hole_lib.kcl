@@ -3,6 +3,7 @@
 
 topNone = 0
 topCounterbore = 1
+topCountersink = 2
 
 export fn noTopFeature() {
   return { feature = topNone }
@@ -13,6 +14,14 @@ export fn counterbore(diameter, depth) {
     diameter = diameter,
     depth = depth,
     feature = topCounterbore
+  }
+}
+
+export fn countersink(diameter, angle) {
+  return {
+    diameter = diameter,
+    angle = angle,
+    feature = topCountersink,
   }
 }
 
@@ -42,17 +51,36 @@ export fn flat() {
 
 fn drawTop(@partialHoleProfile, body, top) {
   return if top.feature == topNone {
+  
     partialHoleProfile
       |> yLine(length = body.diameter)
+      
   } else if top.feature == topCounterbore {
+  
     lip = (top.diameter - body.diameter) / 2
     partialHoleProfile
       |> xLine(length = top.depth)
       |> yLine(length = top.diameter / 2)
       |> xLine(length = -top.depth)
       |> yLine(length = -lip)
+      
+  } else if top.feature == topCountersink {
+  
+    t = top.angle /2
+    bigR = top.diameter/2
+    smlR = body.diameter/2
+    bigAdj = tan(t) / bigR
+    bigH = bigR / sin(t)
+    smlAdj = tan(t) / smlR
+    smlH = smlR / sin(t)
+    up = bigAdj - smlAdj
+    partialHoleProfile
+    |> xLine(length = up)
+    |> yLine(length = bigR)
+    |> angledLine(length = (bigH - smlH), angle = (90deg-t)+180)
+    
   } else {
-    assert(1, isEqualTo = 0)
+    assert(1, isEqualTo = 0, msg = "unknown top feature")
   }
 }
 
@@ -68,8 +96,11 @@ export fn holeProfile(bottom, body, top) {
     |> xLine(length = adj)
     // Body depth
     |> xLine(length = body.blindDepth)
+    // Dynamic dispatch to top
     |> drawTop(body, top)
+     // Body depth
     |> xLine(length = -body.blindDepth)
+    // // Drill profile
     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
     |> close()
 }
@@ -81,5 +112,4 @@ export fn carveHole(@holeProfile) {
   return holeProfile
     |> revolve(axis = X)
     |> rotate(axis = Z, angle = 90deg)
-    |> appearance(color = "#ff9933")
 }

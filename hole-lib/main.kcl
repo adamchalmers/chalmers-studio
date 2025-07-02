@@ -1,11 +1,25 @@
 @settings(defaultLengthUnit = cm)
 
-import carveHole, counterbore, holeProfile, drill, blind from "hole_lib.kcl"
+import carveHole, counterbore, flat, countersink, holeProfile, drill, blind from "hole_lib.kcl"
 
-chalmersCorpStdHole = holeProfile(
-  bottom = drill(bitAngle = 118deg),
-  body = blind(depth = 10, diameter = 4),
-  top = counterbore(diameter = 5, depth = 2),
+
+// Leftmost hole
+carveHole(
+  holeProfile(
+    bottom = drill(bitAngle = 118deg),
+    body = blind(depth = 10, diameter = 4),
+    top = countersink(diameter = 5, angle = 82deg),
+  )
 )
+|> appearance(color = "#2299ff")
 
-carveHole(chalmersCorpStdHole)
+// Rightmost hole
+carveHole(
+  holeProfile(
+    bottom = flat(),
+    body = blind(depth = 10, diameter = 4),
+    top = counterbore(diameter = 5, depth = 2),
+  )
+)
+|> translate(y = -10)
+|> appearance(color = "#44aa22")
