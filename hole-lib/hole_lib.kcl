@@ -52,7 +52,7 @@ export fn flat() {
 
 
 fn drawTop(@partialHoleProfile, body, top) {
-  return if top.feature == topNone {
+  prof = if top.feature == topNone {
     partialHoleProfile
       |> yLine(length = body.diameter)
   } else if top.feature == topCounterbore {
@@ -79,6 +79,26 @@ fn drawTop(@partialHoleProfile, body, top) {
   } else {
     assert(top.feature, isLessThanOrEqual = topCountersink, msg = "unknown top feature")
   }
+  return prof
+}
+
+
+fn topHeight(body, top) {
+  height = if top.feature == topNone {
+    0
+  } else if top.feature == topCounterbore {
+    top.depth
+  } else if top.feature == topCountersink {
+    t = top.angle / 2
+    tr = top.diameter / 2
+    br = body.diameter / 2
+    // Ugly trigonometry that I calculated with pen and paper
+    up = (tr - br) / tan(t)
+    up
+  } else {
+    assert(top.feature, isLessThanOrEqual = topCountersink, msg = "unknown top feature")
+  }
+  return height
 }
 
 
@@ -91,15 +111,22 @@ conventionalAxis = X
 conventionalPlane = XY
 
 export fn holeProfile(bottom, body, top) {
+
+  // Calculate the drill bit height
   radius = body.diameter / 2
   theta = bottom.drillBitAngle / 2
+  drillHeight = radius / tan(theta)
 
-  adj = radius / tan(theta)
-  hyp = radius / sin(theta)
+
+  // Calculate total model height from top to bottom
+  hBody = body.blindDepth
+  hBott = drillHeight
+  totalHeight = hBody + hBott + topHeight(body, top)
+  
   return startSketchOn(conventionalPlane)
-    |> startProfile(at = [0, 0])
+    |> startProfile(at = [0, 0]) // TODO: translate by totalHeight here?
     // Drill profile
-    |> xLine(length = adj)
+    |> xLine(length = drillHeight)
     // Body depth
     |> xLine(length = body.blindDepth)
     // Dynamic dispatch to top
@@ -146,4 +173,18 @@ export fn hole(@solid, face, hole) {
     |> rotate(axis = rot.axis, angle = rot.angle)
   return subtract(solid, tools = [toCut])
 }
+
+
+holeProf = holeProfile(bottom = flat(), body = blind(depth = 10, diameter = 4), top = counterbore(diameter = 5, depth = 2))
+visualize(holeProf)
+// cubeLen = 10
+// bigCube = startSketchOn(XY)
+//   |> startProfile(at = [-cubeLen / 2, -cubeLen / 2])
+//   |> line(end = [cubeLen, 0])
+//   |> line(end = [0, cubeLen])
+//   |> line(end = [-cubeLen, 0])
+//   |> line(end = [0, -cubeLen])
+//   |> close()
+//   |> extrude(length = cubeLen, symmetric = true)
+//   |> hole(face = END, hole = holeProf)
 
