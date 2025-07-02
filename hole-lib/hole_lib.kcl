@@ -23,7 +23,7 @@ export fn countersink(diameter, angle) {
   return {
     diameter = diameter,
     angle = angle,
-    feature = topCountersink,
+    feature = topCountersink
   }
 }
 
@@ -53,34 +53,30 @@ export fn flat() {
 
 fn drawTop(@partialHoleProfile, body, top) {
   return if top.feature == topNone {
-  
     partialHoleProfile
       |> yLine(length = body.diameter)
-      
   } else if top.feature == topCounterbore {
-  
     lip = (top.diameter - body.diameter) / 2
     partialHoleProfile
       |> xLine(length = top.depth)
       |> yLine(length = top.diameter / 2)
       |> xLine(length = -top.depth)
       |> yLine(length = -lip)
-      
   } else if top.feature == topCountersink {
-  
-    t = top.angle /2
-    bigR = top.diameter/2
-    smlR = body.diameter/2
-    bigAdj = tan(t) / bigR
-    bigH = bigR / sin(t)
-    smlAdj = tan(t) / smlR
-    smlH = smlR / sin(t)
-    up = bigAdj - smlAdj
+    t = top.angle / 2
+    // assert(t, isEqualTo = 15deg)
+    tr = top.diameter / 2
+    assert(tr, isGreaterThan = body.diameter/2)
+    // assert(tr, isEqualTo = 4)
+    br = body.diameter / 2
+    up = (tr - br) / tan(t)
+    b = br/tan(t)
+    p = ((up + b) / cos(t)) - (2/(tan(t) * cos(t)))
+    a = 90 - t
     partialHoleProfile
-    |> xLine(length = up)
-    |> yLine(length = bigR)
-    |> angledLine(length = (bigH - smlH), angle = (90deg-t)+180)
-    
+      |> xLine(length = up)
+      |> yLine(length = tr)
+      |> angledLine(length = p, angle = 270-a)
   } else {
     assert(1, isEqualTo = 0, msg = "unknown top feature")
   }
@@ -100,7 +96,7 @@ export fn holeProfile(bottom, body, top) {
     |> xLine(length = body.blindDepth)
     // Dynamic dispatch to top
     |> drawTop(body, top)
-     // Body depth
+    // Body depth
     |> xLine(length = -body.blindDepth)
     // // Drill profile
     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
@@ -108,6 +104,7 @@ export fn holeProfile(bottom, body, top) {
 }
 
 // Geo math
+
 
 fn cross(v1, v2) {
   return [
@@ -119,18 +116,6 @@ fn cross(v1, v2) {
 
 fn dot(v1, v2) {
   return v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2]
-}
-
-fn sub(@a, b) {
-  return [a[0] - b[0], a[1] - b[1], a[2] - b[2]]
-}
-
-fn add(@a, b) {
-  return [a[0] + b[0], a[1] + b[1], a[2] + b[2]]
-}
-
-fn div(@v, s) {
-  return [v[0] / s, v[1] / s, v[2] / s]
 }
 
 fn magnitude(@v) {
@@ -182,46 +167,31 @@ export fn carveHoleInto(@solid, face, hole) {
   targetPlaneNormal = cross(v1 = targetPlane.xAxis, v2 = targetPlane.yAxis)
   // v2 is the X axis by convention, but cannot coerce properly
   // so must give it manually.
-  v2 = [1,0,0] 
+  v2 = [1, 0, 0]
   tn = cross(v1 = v2, v2 = targetPlaneNormal)
   targetNormal = [
     tn[0]: number(mm),
     tn[1]: number(mm),
-    tn[2]: number(mm),
+    tn[2]: number(mm)
   ]: Point3d
-  dotProd = dot(
-    v1 = normalize(targetPlaneNormal),
-    v2 = normalize(v2),
-  ): number(_)
-  rot = if (magnitude(targetNormal) == 0) {
-    { axis = [1, 0, 0], angle = 0 } 
+  dotProd = dot(v1 = normalize(targetPlaneNormal), v2 =   normalize(v2)): number(_)
+  rot = if magnitude(targetNormal) == 0 {
+    if acos(dotProd) == 180deg {
+      { axis = [0, 1, 0], angle = 180deg }
+    } else {
+      { axis = [1, 0, 0], angle = 0 }
+    }
   } else {
-    { axis = targetNormal, angle = acos(dotProd) }
+    {
+      axis = targetNormal,
+      angle = acos(dotProd)
+    }
   }
   toCut = hole
     |> revolve(axis = X)
     |> rotate(axis = rot.axis, angle = rot.angle)
     |> appearance(color = "#ff0000")
-  // return subtract(solid, tools = [toCut])
-  return 3
+  return subtract(solid, tools = [toCut])
 }
 
-cubeLen = 10
-bigCube = startSketchOn(XY) |> 
-startProfile(at = [-cubeLen/2, -cubeLen/2])
-|> line(end = [cubeLen, 0])
-|> line(end = [0, cubeLen])
-|> line(end = [-cubeLen, 0])
-|> line(end = [0, -cubeLen], tag = $a)
-|> close()
-|> extrude(length = cubeLen, symmetric = true)
 
-carveHoleInto(
-  bigCube,
-  face = a,
-  hole = holeProfile(
-    bottom = flat(),
-    body = blind(depth = 10, diameter = 4),
-    top = counterbore(diameter = 5, depth = 2),
-  )
-)
