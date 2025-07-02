@@ -7,8 +7,6 @@ topNone = 0
 topCounterbore = 1
 topCountersink = 2
 
-conventionalPlane = XY
-
 export fn noTopFeature() {
   return { feature = topNone }
 }
@@ -84,6 +82,15 @@ fn drawTop(@partialHoleProfile, body, top) {
   }
 }
 
+
+// Actually defining a hole
+
+// v2 is the X axis by convention, but cannot coerce properly
+// so must give it manually.
+conventionalAxisV2 = [1, 0, 0]
+conventionalAxis = X
+conventionalPlane = XY
+
 export fn holeProfile(bottom, body, top) {
   radius = body.diameter / 2
   theta = bottom.drillBitAngle / 2
@@ -105,11 +112,9 @@ export fn holeProfile(bottom, body, top) {
     |> close()
 }
 
-// Actually defining a hole
-
 export fn visualize(@holeProfile) {
   return holeProfile
-    |> revolve(axis = X)
+    |> revolve(axis = conventionalAxis)
     |> appearance(color = "#ff0000")
 }
 
@@ -117,16 +122,14 @@ export fn visualize(@holeProfile) {
 export fn hole(@solid, face, hole) {
   targetPlane = planeOf(solid, face)
   targetPlaneNormal = cross(v1 = targetPlane.xAxis, v2 = targetPlane.yAxis)
-  // v2 is the X axis by convention, but cannot coerce properly
-  // so must give it manually.
-  v2 = [1, 0, 0]
-  tn = cross(v1 = v2, v2 = targetPlaneNormal)
+
+  tn = cross(v1 = conventionalAxisV2, v2 = targetPlaneNormal)
   targetNormal = [
     tn[0]: number(mm),
     tn[1]: number(mm),
     tn[2]: number(mm)
   ]: Point3d
-  dotProd = dot(v1 =   normalize(targetPlaneNormal), v2 =   normalize(v2)): number(_)
+  dotProd = dot(v1 = normalize(targetPlaneNormal), v2 = normalize(conventionalAxisV2)): number(_)
   rot = if magnitude(targetNormal) == 0 {
     if acos(dotProd) == 180deg {
       { axis = [0, 1, 0], angle = 180deg }
