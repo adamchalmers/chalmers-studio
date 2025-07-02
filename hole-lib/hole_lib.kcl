@@ -124,7 +124,7 @@ export fn holeProfile(bottom, body, top) {
   totalHeight = hBody + hBott + topHeight(body, top)
   
   return startSketchOn(conventionalPlane)
-    |> startProfile(at = [0, 0]) // TODO: translate by totalHeight here?
+    |> startProfile(at = [-totalHeight, 0])
     // Drill profile
     |> xLine(length = drillHeight)
     // Body depth
