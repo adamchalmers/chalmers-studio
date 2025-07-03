@@ -45,7 +45,7 @@ export fn drill(bitAngle) {
 }
 
 export fn flat() {
-  return { drillBitAngle = 180deg }
+  return { drillBitAngle = 179.99deg }
 }
 
 // Defining the hole
@@ -138,7 +138,7 @@ export fn holeProfile(bottom, body, top) {
     |> close()
 }
 
-export fn visualize(@holeProfile) {
+export fn revolveHole(@holeProfile) {
   return holeProfile
     |> revolve(axis = conventionalAxis)
     |> appearance(color = "#ff0000")
@@ -169,22 +169,9 @@ export fn hole(@solid, face, hole) {
     }
   }
   toCut = hole
-    |> visualize()
+    |> revolveHole()
     |> rotate(axis = rot.axis, angle = rot.angle)
   return subtract(solid, tools = [toCut])
 }
 
-
-holeProf = holeProfile(bottom = flat(), body = blind(depth = 10, diameter = 4), top = counterbore(diameter = 5, depth = 2))
-visualize(holeProf)
-// cubeLen = 10
-// bigCube = startSketchOn(XY)
-//   |> startProfile(at = [-cubeLen / 2, -cubeLen / 2])
-//   |> line(end = [cubeLen, 0])
-//   |> line(end = [0, cubeLen])
-//   |> line(end = [-cubeLen, 0])
-//   |> line(end = [0, -cubeLen])
-//   |> close()
-//   |> extrude(length = cubeLen, symmetric = true)
-//   |> hole(face = END, hole = holeProf)
 
