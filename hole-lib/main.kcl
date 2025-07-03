@@ -1,25 +1,24 @@
 @settings(defaultLengthUnit = cm)
 
-import carveHole, counterbore, flat, countersink, holeProfile, drill, blind from "hole_lib.kcl"
+import counterbore, flat, countersink, holeProfile, drill, blind, hole from "hole_lib.kcl"
 
+cubeLen = 9
+bigCube = startSketchOn(XY)
+  |> startProfile(at = [-cubeLen / 2, -cubeLen / 2])
+  |> line(end = [cubeLen, 0], tag = $a)
+  |> line(end = [0, cubeLen], tag = $b)
+  |> line(end = [-cubeLen, 0], tag = $c)
+  |> line(end = [0, -cubeLen], tag = $d)
+  |> close()
+  |> extrude(length = cubeLen, symmetric = true)
 
-// Leftmost hole
-carveHole(
-  holeProfile(
-    bottom = drill(bitAngle = 118deg),
-    body = blind(depth = 10, diameter = 4),
-    top = countersink(diameter = 5, angle = 82deg),
-  )
+// This is my hole, it was made for me
+myHole = holeProfile(
+  bottom = flat(),
+  body = blind(depth = 10, diameter = 4),
+  top = countersink(diameter = 5, angle = 88deg),
 )
-|> appearance(color = "#2299ff")
 
-// Rightmost hole
-carveHole(
-  holeProfile(
-    bottom = flat(),
-    body = blind(depth = 10, diameter = 4),
-    top = counterbore(diameter = 5, depth = 2),
-  )
-)
-|> translate(y = -10)
-|> appearance(color = "#44aa22")
+cubeWithHole = bigCube
+  |> hole(face = END, hole = myHole)
+
