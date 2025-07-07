@@ -2,6 +2,16 @@
 
 import counterbore, flat, countersink, holeProfile, drill, blind, hole from "hole_lib.kcl"
 
+
+
+// This is my hole, it was made for me
+myHole = holeProfile(
+  bottom = flat(),
+  body = blind(depth = 4, diameter = 4),
+  holeType = countersink(diameter = 5, angle = 88deg),
+)
+// |> revolveHole()
+
 cubeLen = 9
 bigCube = startSketchOn(XY)
   |> startProfile(at = [-cubeLen / 2, -cubeLen / 2])
@@ -11,14 +21,4 @@ bigCube = startSketchOn(XY)
   |> line(end = [0, -cubeLen], tag = $d)
   |> close()
   |> extrude(length = cubeLen, symmetric = true)
-
-// This is my hole, it was made for me
-myHole = holeProfile(
-  bottom = flat(),
-  body = blind(depth = 10, diameter = 4),
-  holeType = countersink(diameter = 5, angle = 88deg),
-)
-
-cubeWithHole = bigCube
-  |> hole(face = a, hole = myHole)
-
+  |> hole(face = END, hole = myHole)
