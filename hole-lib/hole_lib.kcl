@@ -165,14 +165,20 @@ fn rotateToFace(solid, face) {
   
   rot = if magnitude(targetNormal) == 0 {
     if acos(dotProd) == 180deg {
-      { axis = [0, 1, 0], angle = 180deg }
+      { axis = [0, 1, 0]
+      , angle = 180deg
+      , translateDist = targetPlane.origin
+      }
     } else {
-      { axis = [1, 0, 0], angle = 0 }
+      { axis = [1, 0, 0]
+      , angle = 0
+      , translateDist = targetPlane.origin
+      }
     }
   } else {
-    {
-      axis = targetNormal,
-      angle = acos(dotProd)
+    { axis = targetNormal
+    , angle = acos(dotProd)
+    , translateDist = targetPlane.origin
     }
   }
   return rot
@@ -184,6 +190,7 @@ export fn hole(@solid, face, hole) {
   toCut = hole
     |> revolveHole()
     |> rotate(axis = rot.axis, angle = rot.angle)
+    |> translate(axis = rot.axis, distance = rot.translateDist)
   // return subtract(solid, tools = [toCut])
   return solid
 }
