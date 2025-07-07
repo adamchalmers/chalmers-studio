@@ -144,10 +144,12 @@ export fn revolveHole(@holeProfile) {
     |> appearance(color = "#ff0000")
 }
 
-
-export fn hole(@solid, face, hole) {
+fn rotateToFace(solid, face) {
   targetPlane = planeOf(solid, face)
-  targetPlaneNormal = cross(v1 = targetPlane.xAxis, v2 = targetPlane.yAxis)
+  targetPlaneNormal = cross(
+    v1 = targetPlane.xAxis,
+    v2 = targetPlane.yAxis,
+  )
 
   tn = cross(v1 = conventionalAxisV2, v2 = targetPlaneNormal)
   targetNormal = [
@@ -155,7 +157,12 @@ export fn hole(@solid, face, hole) {
     tn[1]: number(mm),
     tn[2]: number(mm)
   ]: Point3d
-  dotProd = dot(v1 = normalize(targetPlaneNormal), v2 = normalize(conventionalAxisV2)): number(_)
+  
+  dotProd = dot(
+    v1 = normalize(targetPlaneNormal),
+    v2 = normalize(conventionalAxisV2),
+  ): number(_)
+  
   rot = if magnitude(targetNormal) == 0 {
     if acos(dotProd) == 180deg {
       { axis = [0, 1, 0], angle = 180deg }
@@ -168,10 +175,15 @@ export fn hole(@solid, face, hole) {
       angle = acos(dotProd)
     }
   }
+  return rot
+}
+
+
+export fn hole(@solid, face, hole) {
+  rot = rotateToFace(solid, face)
   toCut = hole
     |> revolveHole()
     |> rotate(axis = rot.axis, angle = rot.angle)
-    // |> rotate(pitch = 180)
   // return subtract(solid, tools = [toCut])
   return solid
 }
@@ -192,9 +204,9 @@ myHole = holeProfile(
   body = blind(depth = 10, diameter = 4),
   holeType = countersink(diameter = 5, angle = 88deg),
 )
-|> revolveHole()
+// |> revolveHole()
 
-// cubeWithHole = bigCube
-//   |> hole(face = a, hole = myHole)
+cubeWithHole = bigCube
+  |> hole(face = a, hole = myHole)
 
 
