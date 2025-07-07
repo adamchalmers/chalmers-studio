@@ -20,5 +20,5 @@ myHole = holeProfile(
 )
 
 cubeWithHole = bigCube
-  |> hole(face = END, hole = myHole)
+  |> hole(face = a, hole = myHole)
 
