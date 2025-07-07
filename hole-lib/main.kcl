@@ -16,7 +16,7 @@ bigCube = startSketchOn(XY)
 myHole = holeProfile(
   bottom = flat(),
   body = blind(depth = 10, diameter = 4),
-  top = countersink(diameter = 5, angle = 88deg),
+  holeType = countersink(diameter = 5, angle = 88deg),
 )
 
 cubeWithHole = bigCube
